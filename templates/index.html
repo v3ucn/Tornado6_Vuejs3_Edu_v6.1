@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Edu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
+    <link rel="stylesheet" href="{{ static_url("css/min.css") }}" >
+    <script src="{{ static_url("js/axios.js") }}"></script>
+    <script src="{{ static_url("js/vue.js") }}"></script>
+</head>
+
+<body>
+    <div>
+    
+    {% include "head.html" %}
+   
+    <div id="app"  class="container main-content">
+
+        ${message}
+
+        <div class="row" >
+           
+    
+            <div class="col-12 col-md-6 col-lg-4 mb-5">
+
+                <div class="card border-0">
+                    <a href="/pandas-merge-join-and-concat/">
+                        
+                        <img src="{{ static_url("img/A-Guide-to-Python-Keywords_Watermarked.73f8f57a93ed.jpeg") }}" width="330" height="182" >
+                    
+                    </a>
+                    <div class="card-body m-0 p-0 mt-2">
+                        <a class=" " href="/pandas-merge-join-and-concat/">
+                            <h2 class="card-title h4 my-0 py-0">Combining Data in Pandas With merge(), .join(), and concat()</h2>
+                        </a>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                <span class="mr-2">Apr 25, 2022</span>
+                                <span class="fa fa-tags" aria-hidden="true"></span>
+                                <a href="/tutorials/data-science/" class="badge badge-light text-muted">data-science</a>
+                                <a href="/tutorials/intermediate/" class="badge badge-light text-muted">intermediate</a>
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+          
+           
+    
+           
+
+        </div>
+    </div>
+ 
+    {% include "foot.html" %}
+
+    </div>
+
+    <script>
+
+        const App = {
+            data() {
+                return {
+
+                };
+            },
+            created: function() {
+
+       
+
+                // this.myaxios("/userinfo/","get",{"id":localStorage.getItem("id")}).then(data =>{
+
+                //    console.log(data);
+
+                //  });
+
+            },
+            methods: {
+            },
+        };
+const app = Vue.createApp(App);
+app.config.globalProperties.myaxios = myaxios;
+app.config.globalProperties.axios = axios;
+app.config.compilerOptions.delimiters = ['${', '}']
+app.mount("#app");
+
+    </script>
+
+</body>
+
+</html>
