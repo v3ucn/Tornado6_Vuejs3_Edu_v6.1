@@ -5,7 +5,7 @@ from .base import BaseHandler
 from .models import User,database
 
 from utils.utils import create_password,create_code,sendMail,MyJwt
-from utils.decorators import auth_async
+from utils.decorators import jwt_async,auth_validated
 import peewee
 
 import random
@@ -15,14 +15,105 @@ import io
 import json
 
 from abc import ABCMeta, abstractmethod
+from .config import site_domain
 
+from web3.auto import w3
+from eth_account.messages import defunct_hash_message
+import time
+
+class CheckW3(BaseHandler):
+
+    async def post(self):
+
+        public_address = self.get_argument("public_address")
+        signature = self.get_argument("signature")
+
+        domain = "localhost"
+
+        now = int(time.time())
+        sortanow = now-now%600
+   
+        original_message = 'Signing in to {} at {}'.format(domain,sortanow)
+        print("[+] checking: "+original_message)
+        message_hash = defunct_hash_message(text=original_message)
+        signer = w3.eth.account.recoverHash(message_hash, signature=signature)
+
+        if signer == public_address:
+            try:
+                user = await self.application.objects.get(User,email=public_address)
+            except Exception as e:
+                user = await self.application.objects.create(User,email=public_address,password=create_password("third"),role=1)
+
+            myjwt = MyJwt()
+            token = myjwt.encode({"id":user.id})
+            self.finish({"msg":"ok","errcode":0,"public_address":public_address,"token":token})
+        else:
+            self.finish({"msg":"could not authenticate signature","errcode":1})
+
+
+
+# 用户管理
+class UserManage(BaseHandler):
+
+    # 查询
+    @jwt_async()
+    @auth_validated
+    async def get(self):
+
+        users = await self.application.objects.execute(User.select())
+        users = [self.application.json_model(x) for x in users]
+
+        self.finish({"data":users,"errcode":0})
+
+    # 修改
+    @jwt_async()
+    @auth_validated
+    async def put(self):
+
+        id = self.get_argument("id")
+        email = self.get_argument("email")
+
+        user = await self.application.objects.get(User,id=id)
+        user.email = email
+        await self.application.objects.update(user)
+        user.save()
+
+        self.finish({"msg":"ok","errcode":0})
+
+    # 添加
+    @jwt_async()
+    @auth_validated
+    async def post(self):
+
+        email = self.get_argument("email")
+        password = self.get_argument("password")
+        role = self.get_argument("role")
+
+        user = await self.application.objects.create(User,email=email,password=create_password(password),role=int(role))
+
+        self.finish({"msg":"ok","errcode":0})
+
+    # 删除
+    @jwt_async()
+    @auth_validated
+    async def delete(self):
+
+        id = self.get_argument("id")
+
+        user = await self.application.objects.get(User,id=id)
+        user.state = 0
+        await self.application.objects.update(user)
+        user.save()
+
+        self.finish({"msg":"ok","errcode":0})
 
 
 
 # 用户详情
 class UserInfo(BaseHandler):
 
-    @auth_async()
+    @jwt_async()
+    @auth_validated
     async def get(self):
 
         if self._current_user:
@@ -60,7 +151,7 @@ class GithubProvider(IdProvider):
 
         self.clientid = "249b69d8f6e63efb2590"
         self.clientsecret = "b5989f2c67d6f51d5dffc69fecd8140fbb8277a9"
-        self.url = "http://localhost:8000/github_back/"
+        self.url = site_domain+"/github_back/"
         self.database = database
 
     def get_url(self):
@@ -149,7 +240,7 @@ class GithubSign(BaseHandler):
 
         self.clientid = "249b69d8f6e63efb2590"
         self.clientsecret = "b5989f2c67d6f51d5dffc69fecd8140fbb8277a9"
-        self.url = "http://localhost:8000/github_back/"
+        self.url = site_domain+"/github_back/"
 
     async def set_user(self,email):
 
@@ -177,7 +268,7 @@ class GithubSign(BaseHandler):
 
         url = "https://github.com/login/oauth/access_token?client_id=%s&client_secret=%s&code=%s" % (self.clientid,self.clientsecret,code)
 
-        res = await httpclient.AsyncHTTPClient().fetch(url,method='POST',headers=headers,validate_cert=False,body=b'')
+        res = await httpclient.AsyncHTTPClient().fetch(url,method='POST',headers=headers,validate_cert=False,body=b'',connect_timeout=30.0, request_timeout=30.0)
 
         print(json.loads(res.body.decode()))
 
@@ -185,7 +276,7 @@ class GithubSign(BaseHandler):
 
         # 获取gitHub用户信息
         headers = {'accept':'application/json',"Authorization":"token %s" % token}
-        res = await httpclient.AsyncHTTPClient().fetch("https://api.github.com/user",method='GET',headers=headers,validate_cert=False)
+        res = await httpclient.AsyncHTTPClient().fetch("https://api.github.com/user",method='GET',headers=headers,validate_cert=False,connect_timeout=30.0, request_timeout=30.0)
 
         userinfo = json.loads(res.body.decode())
 
@@ -237,7 +328,6 @@ class ImgCode(BaseHandler):
 # 邮箱验证
 class EmailActive(BaseHandler):
 
-    @auth_async()
     async def get(self):
 
         email = self.get_argument("email")
@@ -287,7 +377,7 @@ class UserHandler(BaseHandler):
             user = await self.application.objects.create(User,email=email,password=create_password(password),role=int(role))
             # 发送随机验证码
             code = create_code()
-            sendMail(user.email,code)
+            await sendMail(user.email,code)
             await self.application.redis.set(user.email,code)
 
             self.finish({"msg":"注册成功","errcode":0})
@@ -316,6 +406,14 @@ class SignInHandler(BaseHandler):
 
         self.render("sign_in.html")
 
+class AdminUserHandler(BaseHandler):
+    
+
+    # 用户管理
+    async def get(self):
+
+        self.render("admin_user.html")
+
 
 urlpatterns = [
     url('/user_signon/',UserHandler),
@@ -325,6 +423,9 @@ urlpatterns = [
     url('/imgcode/',ImgCode),
     url('/github_back/',GithubSign),
     url('/userinfo/',UserInfo),
+    url('/checkw3/',CheckW3),
+    url('/admin/user/',UserManage),
+    url('/admin_user/',AdminUserHandler),
 ]
 
 

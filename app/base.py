@@ -45,3 +45,42 @@ class BaseHandler(tornado.web.RequestHandler):
         # `*args` is for route with `path arguments` supports
         self.set_status(204)
         self.finish()
+
+
+# 封装操作类
+
+class BaseManage(BaseHandler):
+
+    async def get_all(self,model):
+
+        datas = await self.application.objects.execute(model.select())
+        datas = [self.application.json_model(x) for x in datas]
+
+        return datas
+
+    async def get_one(self,model,id):
+
+        data = await self.application.objects.get(model.select().where(model.id==id))
+        data = self.application.json_model(data)
+
+        return data
+
+    async def create(self,model,data):
+
+        await self.application.objects.create(model,**data)
+
+        return True
+
+    async def update(self,model,id,fields):
+
+        data = await self.application.objects.get(model.select().where(model.id==id))
+        model.update(**fields).where(model.id==data.id).execute()
+
+        return True
+
+    async def remove(self,model,id):
+
+        data = await self.application.objects.get(model.select().where(model.id==id))
+        model.update(**{"state":4}).where(model.id==data.id).execute()
+
+        return True

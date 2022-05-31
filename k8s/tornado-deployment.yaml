@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: tornado
+  name: tornado
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: tornado
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/edu-net: "true"
+        io.kompose.service: tornado
+    spec:
+      containers:
+        - image: zcxey2911/tornado_edu
+          name: tornado
+          ports:
+            - containerPort: 8000
+            - containerPort: 8001
+          resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Edu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
+    <link rel="stylesheet" href="{{ static_url("css/min.css") }}" >
+    <script src="{{ static_url("js/axios.js") }}"></script>
+    <script src="{{ static_url("js/vue.js") }}"></script>
+</head>
+
+<body>
+    <div>
+    
+    {% include "head.html" %}
+   
+    <div id="app"  class="container main-content">
+
+        <div class="row" style="border:0px;padding-bottom:5rem;">
+            <div class="col-md-12 col-lg-3" style="background-color:#f0f0f0;border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: 0.25rem;padding:2rem">
+                <ul style="line-height:3rem;">
+
+                    <li>审核队列</li>
+
+                </ul>
+            </div>
+            
+            <div class="col-12 col-lg-9">
+
+                <div style="border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: 0.25rem;padding:2rem;"  >
+    
+                    <table class="qgg-table">
+<thead>
+<tr>
+<th width="33%">课程id</th>
+
+</tr>
+</thead>
+<tbody>	
+		<tr v-for="item in courses">
+			<td>${item}</td>
+		</tr>
+		
+    	</tbody>
+</table>
+            </div>
+
+               
+            </div>
+   
+       
+
+
+        </div>
+ 
+    {% include "foot.html" %}
+
+    </div>
+
+    <script>
+        const App = {
+            data() {
+                return {
+                    courses:[],
+                    pollingST:null
+                };
+            },
+            created: function() {
+       
+                this.polling();
+            },
+            destroyed () {
+              clearTimeout(this.pollingST);  
+            },
+            methods: {
+               
+                polling:function(){
+
+                    this.myaxios("/auditlist/","post").then(data =>{
+
+                   if(data.errcode){
+
+                    alert(data.msg);
+                       
+                   }else{
+                       this.courses = data.data;
+                   }
+
+                   this.pollingST = setTimeout(() => {
+          clearTimeout(this.pollingST);
+          this.polling();
+        }, 5000)
+
+                 });
+
+
+                }
+
+            },
+        };
+const app = Vue.createApp(App);
+app.config.globalProperties.myaxios = myaxios;
+app.config.globalProperties.axios = axios;
+app.config.compilerOptions.delimiters = ['${', '}']
+app.mount("#app");
+
+    </script>
+
+</body>
+
+</html>

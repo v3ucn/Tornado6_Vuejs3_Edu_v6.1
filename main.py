@@ -7,7 +7,7 @@ import peewee_async
 import aioredis
 import asyncio
 
-from app import user
+from app import user,course,audit,order,pay,msg
 from app.base import BaseHandler
 from app.models import database,User
 from app.config import debug,redis_link
@@ -15,9 +15,14 @@ from app.config import debug,redis_link
 from playhouse.shortcuts import model_to_dict
 import json
 
+from tornado.options import define, options
+define('port', default=8000, help='default port',type=int)
+
+
 def json_model(model):
     return model_to_dict(model)
 
+# 三方登录中转页面
 class TransferHandler(BaseHandler):
 
     async def get(self):
@@ -28,51 +33,11 @@ class TransferHandler(BaseHandler):
         self.render("transfer.html",token=token,email=email)
 
 
-
-class MainHandler(BaseHandler):
-
-    async def post(self):
-
-        username = self.get_argument("username")
-
-        password = self.get_argument("password")
-
-        print(username)
-
-        self.finish({"code":200})
-    
-    async def get(self):
-
-
-        token = self.get_argument("token",None)
-        email = self.get_argument("email",None)
-
-        # user = await self.application.objects.get(
-        #             User,
-        #             id=1
-        #         )
-
-        # print(json_model(user))
-        
-        # # 获取分页参数
-        # page = int(self.get_argument("page",1))
-        # size = int(self.get_argument("size",2))
-
-        # # 异步读取文章
-        # articles = await self.application.objects.execute(Article.select().paginate(page,size))
-        # # 序列化操作
-        # articles = [json_model(x) for x in articles]
-
-        self.render("index.html",token=token,email=email)
-        
-        #self.finish({"code":200,"data":articles})
-
 urlpatterns = [
-    (r"/", MainHandler),
     (r"/transfer/",TransferHandler),
 ]
 
-urlpatterns += user.urlpatterns
+urlpatterns += (user.urlpatterns + course.urlpatterns + audit.urlpatterns + order.urlpatterns + pay.urlpatterns + msg.urlpatterns)
 
 import os
 
@@ -93,5 +58,6 @@ application.redis = loop.run_until_complete(redis_pool(loop))
 application.json_model = json_model
 
 if __name__ == "__main__":
-    application.listen(8000)
+    tornado.options.parse_command_line()
+    application.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()

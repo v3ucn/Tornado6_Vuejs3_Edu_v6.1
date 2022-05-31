@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Edu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
+    <link rel="stylesheet" href="{{ static_url("css/min.css") }}" >
+    <link rel="icon" href="/static/img/favicon.68cbf4197b0c.png">
+    <script src="{{ static_url("js/axios.js") }}"></script>
+    <script src="{{ static_url("js/vue.js") }}"></script>
+</head>
+
+<body>
+    <div>
+    
+    {% include "head.html" %}
+   
+    <div id="app"  class="container main-content">
+
+        <div class="row" style="border:0px;padding-bottom:5rem;">
+            <div class="col-md-12 col-lg-3" style="background-color:#f0f0f0;border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: 0.25rem;padding:2rem">
+                <ul style="line-height:3rem;">
+
+                    <li>订单管理</li>
+
+                </ul>
+            </div>
+            
+            <div class="col-12 col-lg-9">
+
+                <div style="border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: 0.25rem;padding:2rem;"  >
+    
+                    <table class="qgg-table">
+<thead>
+<tr>
+<th width="30%">订单id</th>
+<th width="5%">状态</th>
+<th width="25%">日期</th>
+<th width="25%">操作</th>
+</tr>
+</thead>
+<tbody>	
+		<tr v-for="item in orders">
+			<td>${item.orderid}</td>
+            <td>${ state(item.state) }</td>
+            <td>${item.create_time}</td>
+            
+            <td>
+            
+                <select @change="change_channel($event)">
+                    <option value="1">支付宝</option>
+                    <option value="2">Paypal</option>
+                </select>
+
+                <button @click="pay(item.orderid)">支付</button>
+                
+                <button @click="refund(item.orderid)">退款</button>
+            
+            </td>
+		</tr>
+		
+    	</tbody>
+</table>
+            </div>
+
+               
+            </div>
+   
+       
+
+
+        </div>
+ 
+    {% include "foot.html" %}
+
+    </div>
+
+    <script>
+
+        const App = {
+            data() {
+                return {
+                    orders:[],
+                    channel:1
+                };
+            },
+            created: function() {
+       
+                this.myaxios("/myorders/","get").then(data =>{
+
+                    console.log(data);
+
+                   if(data.errcode){
+
+                    alert(data.msg);
+                       
+                   }else{
+                       this.orders = data.data;
+                       
+                   }
+
+                 });
+            },
+            methods: {
+                //订单状态
+                state:function(state){
+
+                    if(state==0){
+                        return "待支付"
+                    }else if(state==1){
+                        return "已支付"
+                    }else if(state==2){
+                        return "已关闭"
+                    }else if(state==3){
+                        return "已退款"
+                    }
+                },
+                //支付渠道
+                change_channel:function(event){
+
+                    this.channel = event.target.value;
+                    console.log(this.channel);
+
+                },
+                //支付
+                pay:function(orderid){
+
+                    window.location.href = "/pay/?orderid="+orderid;
+
+                },
+                //退款
+                refund:function(orderid){
+
+                    this.myaxios("/pay/","post",{"orderid":orderid}).then(data =>{
+
+                    alert(data.msg);
+           
+
+                 });
+
+                },
+
+            },
+        };
+const app = Vue.createApp(App);
+app.config.globalProperties.myaxios = myaxios;
+app.config.globalProperties.axios = axios;
+app.config.compilerOptions.delimiters = ['${', '}']
+app.mount("#app");
+
+    </script>
+
+</body>
+
+</html>

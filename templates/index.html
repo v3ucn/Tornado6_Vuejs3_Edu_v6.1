@@ -6,6 +6,7 @@
     <title>Edu</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
     <link rel="stylesheet" href="{{ static_url("css/min.css") }}" >
+    <link rel="icon" href="/static/img/favicon.68cbf4197b0c.png">
     <script src="{{ static_url("js/axios.js") }}"></script>
     <script src="{{ static_url("js/vue.js") }}"></script>
 </head>
@@ -17,34 +18,167 @@
    
     <div id="app"  class="container main-content">
 
-        ${message}
 
         <div class="row" >
            
-    
+            {% for course in courses %}
+
+      
             <div class="col-12 col-md-6 col-lg-4 mb-5">
 
                 <div class="card border-0">
-                    <a href="/pandas-merge-join-and-concat/">
+                    <a href='/view/?id={{course["id"]}}'>
                         
-                        <img src="{{ static_url("img/A-Guide-to-Python-Keywords_Watermarked.73f8f57a93ed.jpeg") }}" width="330" height="182" >
+                        <img src='/static/uploads/{{course["thumb"]}}' width="330" height="182" >
                     
                     </a>
                     <div class="card-body m-0 p-0 mt-2">
-                        <a class=" " href="/pandas-merge-join-and-concat/">
-                            <h2 class="card-title h4 my-0 py-0">Combining Data in Pandas With merge(), .join(), and concat()</h2>
+                        <a class=" " href='/view/?id={{course["id"]}}'>
+                            <h2 class="card-title h4 my-0 py-0">{{ course["title"] }}</h2>
                         </a>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                <span class="mr-2">Apr 25, 2022</span>
-                                <span class="fa fa-tags" aria-hidden="true"></span>
-                                <a href="/tutorials/data-science/" class="badge badge-light text-muted">data-science</a>
-                                <a href="/tutorials/intermediate/" class="badge badge-light text-muted">intermediate</a>
-                            </small>
-                        </p>
                     </div>
                 </div>
             </div>
+            {% end %}
+
+
+
+            <!--fake-->
+
+
+            <div class="col-12 col-md-6 col-lg-4 mb-5">
+
+                <div class="card border-0">
+                    <a href='/view/?id=1'>
+                        
+                        <img src='/static/uploads/Build-a-Site-Connectivity-Checker_Watermarked.4e66b0f9cc0b.jpeg' width="330" height="182" >
+                    
+                    </a>
+                    <div class="card-body m-0 p-0 mt-2">
+                        <a class=" " href='/view/?id=1'>
+                            <h2 class="card-title h4 my-0 py-0">YAML: The Missing Battery in Python</h2>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4 mb-5">
+
+                <div class="card border-0">
+                    <a href='/view/?id=1'>
+                        
+                        <img src='/static/uploads/Get-Started-With-Django-Part-2-Build-a-User-Management-System_Watermarked.7b58282bc418.jpeg' width="330" height="182" >
+                    
+                    </a>
+                    <div class="card-body m-0 p-0 mt-2">
+                        <a class=" " href='/view/?id=1'>
+                            <h2 class="card-title h4 my-0 py-0">Python GUI Programming With Tkinter</h2>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4 mb-5">
+
+                <div class="card border-0">
+                    <a href='/view/?id=1'>
+                        
+                        <img src='/static/uploads/How-to-Use-Python-datetime-With-Examples_Watermarked.229e4cd65ec7.jpeg' width="330" height="182" >
+                    
+                    </a>
+                    <div class="card-body m-0 p-0 mt-2">
+                        <a class=" " href='/view/?id=1'>
+                            <h2 class="card-title h4 my-0 py-0">Using Python's datetime Module</h2>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4 mb-5">
+
+                <div class="card border-0">
+                    <a href='/view/?id=1'>
+                        
+                        <img src='/static/uploads/Merging-Joining-and-Concatenating-in-Pandas_Watermarked_1.e45698a508a4.jpeg' width="330" height="182" >
+                    
+                    </a>
+                    <div class="card-body m-0 p-0 mt-2">
+                        <a class=" " href='/view/?id=1'>
+                            <h2 class="card-title h4 my-0 py-0">Pagination for a User-Friendly Django App</h2>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4 mb-5">
+
+                <div class="card border-0">
+                    <a href='/view/?id=1'>
+                        
+                        <img src='/static/uploads/Python-3.11-Preview-Task-and-Exception-Groups_Watermarked.a4d6659e8bac.jpeg' width="330" height="182" >
+                    
+                    </a>
+                    <div class="card-body m-0 p-0 mt-2">
+                        <a class=" " href='/view/?id=1'>
+                            <h2 class="card-title h4 my-0 py-0">Image Processing With the Python Pillow Library</h2>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4 mb-5">
+
+                <div class="card border-0">
+                    <a href='/view/?id=1'>
+                        
+                        <img src='/static/uploads/Python-GUI-Programming-With-Tkinter_Watermarked.9e1a9c9070e4.jpeg' width="330" height="182" >
+                    
+                    </a>
+                    <div class="card-body m-0 p-0 mt-2">
+                        <a class=" " href='/view/?id=1'>
+                            <h2 class="card-title h4 my-0 py-0">Python Basics: Code Your First Python Program</h2>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4 mb-5">
+
+                <div class="card border-0">
+                    <a href='/view/?id=1'>
+                        
+                        <img src='/static/uploads/Python-Virtual-Environments_Watermarked.4c787192d42f.jpeg' width="330" height="182" >
+                    
+                    </a>
+                    <div class="card-body m-0 p-0 mt-2">
+                        <a class=" " href='/view/?id=1'>
+                            <h2 class="card-title h4 my-0 py-0">Python Timer Functions: Three Ways to Monitor Your Code</h2>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-12 col-md-6 col-lg-4 mb-5">
+
+                <div class="card border-0">
+                    <a href='/view/?id=1'>
+                        
+                        <img src='/static/uploads/What-to-Expect-at-Your-First-PyCon_Watermarked.fa273e6fe8b9.jpeg' width="330" height="182" >
+                    
+                    </a>
+                    <div class="card-body m-0 p-0 mt-2">
+                        <a class=" " href='/view/?id=1'>
+                            <h2 class="card-title h4 my-0 py-0">Build a Hash Table in Python With TDD</h2>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!--fake-->
+
+            <div class="col-md-10 col-lg-10 article" style="text-align:center;">{% raw page_str %}</div>
+            
 
           
            
@@ -63,18 +197,16 @@
         const App = {
             data() {
                 return {
-
+                        test:'555'
                 };
             },
             created: function() {
-
        
+                this.myaxios("/userinfo/","get").then(data =>{
 
-                // this.myaxios("/userinfo/","get",{"id":localStorage.getItem("id")}).then(data =>{
+                   console.log(data);
 
-                //    console.log(data);
-
-                //  });
+                 });
 
             },
             methods: {
