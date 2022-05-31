@@ -28,7 +28,9 @@ class CheckW3(BaseHandler):
         public_address = self.get_argument("public_address")
         signature = self.get_argument("signature")
 
-        domain = "localhost"
+        domain = self.request.host
+        if ":" in domain:
+            domain = domain[0:domain.index(":")]
 
         now = int(time.time())
         sortanow = now-now%600
