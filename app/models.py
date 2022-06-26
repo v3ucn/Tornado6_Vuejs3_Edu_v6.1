@@ -4,7 +4,18 @@ from .config import mysql_db,mysql_password,mysql_user,mysql_host,mysql_port
 import peewee_async
 import peewee
 
-database = peewee_async.PooledMySQLDatabase(mysql_db,host=mysql_host,port=mysql_port,user=mysql_user,password=mysql_password)
+# 异步数据库
+from playhouse.shortcuts import ReconnectMixin
+from peewee_async import MySQLDatabase as AsyncMySQLDatabase
+# 异步数据库断线重连类
+class ReconnectAsyncMySQLDatabase(ReconnectMixin, AsyncMySQLDatabase):
+    pass
+
+database = ReconnectAsyncMySQLDatabase(mysql_db,host=mysql_host,port=mysql_port,user=mysql_user,password=mysql_password)
+
+#database = peewee_async.PooledMySQLDatabase(mysql_db,host=mysql_host,port=mysql_port,user=mysql_user,password=mysql_password)
+
+    
 
 # 建立基础类
 
@@ -39,7 +50,7 @@ class Category(BaseModel):
 #课程
 class Course(BaseModel):
     
-    title = peewee.CharField(unique=True,verbose_name='课程标题', help_text='课程标题')
+    title = peewee.CharField(unique=True,verbose_name='课程标题', help_text='课程标题',max_length=100)
     desc = peewee.TextField(default='',verbose_name='课程描述', help_text='课程描述')
     cid = peewee.ForeignKeyField(Category, backref='courses')
     price = peewee.BigIntegerField(default=0,verbose_name='课程价格', help_text='课程价格')

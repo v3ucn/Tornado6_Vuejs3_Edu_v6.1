@@ -111,7 +111,7 @@ class CourseHandler(BaseHandler):
             self.render("view.html",course=course,courseid=course['id'],views=views)
 
         else:
-
+            print(self.application.objects.connect())
             total = await self.application.objects.count(Course.select())
             all_page = math.ceil(total / size)
             courses = await self.application.objects.execute(Course.select().paginate(page,size))
@@ -119,6 +119,7 @@ class CourseHandler(BaseHandler):
             courses = [self.application.json_model(x) for x in courses]
 
             page_str = paginate("/",page,all_page)
+
 
             self.render("index.html",courses=courses,page_str=page_str)
 
