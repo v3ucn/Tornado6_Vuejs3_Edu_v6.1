@@ -18,6 +18,7 @@ from abc import ABCMeta, abstractmethod
 from .config import site_domain
 
 from web3.auto import w3
+import peewee_async
 from eth_account.messages import defunct_hash_message
 import time
 
@@ -154,7 +155,7 @@ class GithubProvider(IdProvider):
         self.clientid = "249b69d8f6e63efb2590"
         self.clientsecret = "b5989f2c67d6f51d5dffc69fecd8140fbb8277a9"
         self.url = site_domain+"/github_back/"
-        self.database = database
+        self.database = peewee_async.Manager(database)
 
     def get_url(self):
 
