@@ -96,7 +96,7 @@ Password<span class="asteriskField">*</span>
                 //metamask登录
                 sign_w3:function(){
 
-                    that = this;
+                    var that = this;
                     ethereum.enable().then(function () {
 
     this.provider = new ethers.providers.Web3Provider(web3.currentProvider);
