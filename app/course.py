@@ -193,12 +193,13 @@ class SliceUploadHandler(BaseHandler):
     async def post(self):
 
 
-        file = self.request.files['file']
-        task = self.get_argument("identifier")
-        chunk = self.get_argument("chunkNumber")
+        file = self.request.files["file"][0]
+        filename = self.get_argument("filename")
+        count = self.get_argument("count")
 
-        filename = '%s%s' % (task,chunk) # 构成该分片唯一标识符
-        contents = await file.read() #异步读取文件
+        filename = '%s_%s' % (filename,count) # 构成该分片唯一标识符
+
+        contents = file['body'] #异步读取文件
         async with aiofiles.open('./static/uploads/%s' % filename, "wb") as f:
             await f.write(contents)
 
@@ -210,25 +211,20 @@ class MergeUploadHandler(BaseHandler):
     async def post(self):
 
         filename = self.get_argument("filename")
-        task = self.get_argument("identifier")
+        chunk = 0
 
-        target_filename = filename  # 获取上传文件的文件名
-        task = identifier              # 获取文件的唯一标识符
-        chunk = 1                                       # 分片序号
-        with open('./static/uploads/%s' % target_filename, 'wb') as target_file:  # 创建新文件
+        async with aiofiles.open('./static/uploads/%s' % filename,'ab') as target_file:
+
             while True:
                 try:
-                    filename = './static/uploads/%s%d' % (task,chunk)
-                    # 按序打开每个分片
-                    source_file = open(filename, 'rb')
-                    # 读取分片内容写入新文件
-                    target_file.write(source_file.read())
+                    source_file = open('./static/uploads/%s_%s' % (filename,chunk), 'rb')
+                    await target_file.write(source_file.read())
                     source_file.close()
-                except IOError:
+                except Exception as e:
+                    print(str(e))
                     break
-                chunk += 1
-                os.remove(filename)
 
+                chunk = chunk + 1
         self.finish({"msg":"ok","errcode":0})
 
 from redisearch import Client,TextField,NumericField
