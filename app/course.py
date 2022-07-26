@@ -203,7 +203,7 @@ class SliceUploadHandler(BaseHandler):
         async with aiofiles.open('./static/uploads/%s' % filename, "wb") as f:
             await f.write(contents)
 
-        return {"filename": file.filename,"errcode":0}
+        self.finish({"filename": file.filename,"errcode":0})
 
 # 分片合并
 class MergeUploadHandler(BaseHandler):
