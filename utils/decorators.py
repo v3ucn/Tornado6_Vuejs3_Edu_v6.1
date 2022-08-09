@@ -21,7 +21,7 @@ def websocket_validated(func):
                 self.close(code =1003,reason = "用户不存在")
                 return
             self._current_id = user.id
-            func(self, *args, **kwargs)
+            await func(self, *args, **kwargs)
         except Exception as e:
             print(str(e))
             self.close(code =1002,reason = "token异常")

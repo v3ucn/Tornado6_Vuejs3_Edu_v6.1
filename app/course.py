@@ -192,7 +192,6 @@ class SliceUploadHandler(BaseHandler):
     
     async def post(self):
 
-
         file = self.request.files["file"][0]
         filename = self.get_argument("filename")
         count = self.get_argument("count")

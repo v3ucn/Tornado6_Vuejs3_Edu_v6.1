@@ -27,12 +27,12 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         return True
 
     @websocket_validated
-    def open(self):
+    async def open(self):
         self.set_nodelay(True)
         clients[self._current_id]={"id":self._current_id,"object":self}
         #self.write_message("hello uid:%s" % str(self._current_id))
     @websocket_validated
-    def on_close(self):
+    async def on_close(self):
         if self._current_id in clients:
             del clients[self._current_id]
             print("Client %s is closed"%(self._current_id))
